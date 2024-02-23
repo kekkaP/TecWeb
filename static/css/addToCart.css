@@ -1,0 +1,30 @@
+.addToCart {
+  margin: 20px;
+  width: 130px;
+  height: 40px;
+  color: #000000;
+  border-radius: 7px;
+  padding: 10px 25px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  box-shadow: inset 4px 4px 5px 0px rgba(0,0,0,.1);
+  outline: none;
+  background:  #ffeba7;
+  border: none;
+}
+.addToCart:before {
+  height: 0%;
+  width: 2px;
+}
+.addToCart:hover {
+  box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+  inset 4px 4px 6px 0 rgba(0, 0, 0, .4);
+}
+/* .addToCart:active {
+top: 1px;
+} */

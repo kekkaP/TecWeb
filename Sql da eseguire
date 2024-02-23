@@ -1,0 +1,112 @@
+CREATE DATABASE IF NOT EXISTS products_db;
+
+USE products_db;
+
+CREATE TABLE IF NOT EXISTS`prodotti` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `nome` VARCHAR(255) NOT NULL,
+  `marca_prodotto` VARCHAR(255),
+  `categoria_prodotto` VARCHAR(255),
+  `codice` VARCHAR(50) UNIQUE NOT NULL,
+  `colore` VARCHAR(50),
+  `genere` VARCHAR(50),
+  `prezzo` DECIMAL(10, 2) NOT NULL,
+  `immagine` VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS utenti (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(60) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS carrello (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+	id_cliente int not null,
+	FOREIGN KEY (id_cliente) REFERENCES utenti(id)
+);
+CREATE TABLE IF NOT EXISTS wishlist (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente int not null,
+    FOREIGN KEY (id_cliente) REFERENCES utenti(id)
+);
+CREATE TABLE IF NOT EXISTS ordini (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente int not null,
+    track varchar(255),
+    fattura varchar(255),
+    FOREIGN KEY (id_cliente) REFERENCES utenti(id)
+);
+CREATE TABLE IF NOT EXISTS prodotti_cart (
+	id_carrello int,
+    id_wishlist int,
+    id_ordine int,
+    id_prodotto varchar(255) not null,
+	data_inizio DATE,
+    data_fine DATE,
+    quantita INT,
+    CHECK (id_carrello IS NULL OR id_wishlist IS NULL OR id_ordine IS NULL),
+    FOREIGN KEY (id_prodotto) REFERENCES prodotti(id),
+	FOREIGN KEY (id_wishlist) REFERENCES wishlist(id),
+	FOREIGN KEY (id_ordine) REFERENCES ordini(id),
+    FOREIGN KEY (id_carrello) REFERENCES carrello(id)
+);
+
+-- POPOLAMENTO DB
+INSERT INTO `prodotti` (`nome`, `marca_prodotto`, `categoria_prodotto`, `id`, `colore`, `genere`, `prezzo`, `immagine`)
+
+VALUES
+('Bracciale in Cuoio Dior', 'Dior', 'Bracciali', 'BRC001', 'Nero', 'Uomo', 39.99, 'BRACCIALE_30_MONTAIGNE.png'),
+('Bracciale CD Navy', 'Dior', 'Bracciali', 'BRC002', 'Oro', 'Donna', 49.99, 'BRACCIALE_CD_NAVY.png'),
+('Bracciale Banda in Metallo', 'Prada', 'Bracciali', 'BRC003', 'Multicolore', 'Uomo', 34.99, 'Bracciale_Metallo_Smaltato.png'),
+('Bracciale in Metallo', 'Prada', 'Bracciali', 'BRC004', 'Oro', 'Donna', 59.99, 'Bracciale_Metallo.png'),
+('Bracciale Catena in Oro', 'Versace', 'Bracciali', 'BRC005', 'Oro', 'Uomo', 44.99, 'BRACCIALE_MEDUSA_CHAIN.png'),
+('Bracciale Medusa in Cuoio Nautical', 'Versace', 'Bracciali', 'BRC006', 'Nero', 'Uomo', 34.99, 'BRACCIALE_PELLE_NAUTICAL_MEDUSA.png'),
+('Bracciale Coco', 'Chanel', 'Bracciali', 'BRC007', 'Marrone', 'Uomo', 29.99, 'BRACCIALE_COCO.png'),
+('Bracciale Extrait de Camélia', 'Chanel', 'Bracciali', 'BRC008', 'Bianco', 'Donna', 34.99, 'BRACCIALE_EXTRAIT_DE_CAMÉLIA.png'),
+('Bracciale Enticelle', 'Cartier', 'Bracciali', 'BRC009', 'Argento', 'Unisex', 49.99, 'BRACCIALE_ETINCELLE_DE_CARTIER.png'),
+('Bracciale Cartier dAmour', 'Cartier', 'Bracciali', 'BRC010', 'Oro', 'Donna', 69.99, 'BRACCIALE_CARTIER_DAMOUR.png'),
+('Bracciale Juste un Clou', 'Cartier', 'Bracciali', 'BRC011', 'Oro', 'Donna', 69.99, 'Bracciale_Juste_un_Clou.png'),
+('Collana Lunga Métamorphose', 'Dior', 'Collane', 'CLN001', 'Argento', 'Donna', 49.99, 'COLLANA_LUNGA_DIOR_MÉTAMORPHOSE.png'),
+('Collana Toile de Jouy', 'Dior', 'Collane', 'CLN002', 'Oro', 'Donna', 44.99, 'COLLANA_TOILE_DE_JOUY_FANTASTICA.png'),
+('Collana in Metallo Smaltato', 'Prada', 'Collane', 'CLN003', 'Multicolore', 'Donna', 54.99, 'Collana_Metallo_Smaltato.png'),
+('Collana in Metallo', 'Prada', 'Collane', 'CLN004', 'Oro', 'Donna', 44.99, 'Collana_Metallo.png'),
+('Collana Quilting', 'Versace', 'Collane', 'CLN005', 'Oro', 'Unisex', 34.99, 'COLLANA_GRECA_QUILTING.png'),
+('Collana Medusa con Catena', 'Versace', 'Collane', 'CLN006', 'Argento', 'Donna', 49.99, 'MEDUSA_COLLANA_CATENA.png'),
+('Collana Coco', 'Chanel', 'Collane', 'CLN007', 'Oro', 'Donna', 59.99, 'COLLANA_COCO.png'),
+('Collana Coco Crush', 'Chanel', 'Collane', 'CLN008', 'Argento', 'Unisex', 39.99, 'COLLANA_COCO_CRUSH.png'),
+('Collana Enticelle', 'Cartier', 'Collane', 'CLN009', 'Argento', 'Donna', 59.99, 'COLLANA_ENTICELLE_DE_CARTIER.png'),
+('Collana Cartier dAmour', 'Cartier', 'Collane', 'CLN010', 'Oro', 'Donna', 39.99, 'COLLANA_CARTIER_DAMOUR.png'),
+('Orecchini Tribales', 'Dior', 'Orecchini', 'ORE001', 'Multicolore', 'Donna', 29.99, 'ORECCHINO_DIOR_TRIBALES.png'),
+('Orecchini Jardin Enchanté', 'Dior', 'Orecchini', 'ORE002', 'Oro', 'Donna', 19.99, 'ORECCHINI_JARDIN_ENCHANTÉ.png'),
+('Orecchini Pendenti Toile de Jouy', 'Dior', 'Orecchini', 'ORE003', 'Multicolore', 'Donna', 24.99, 'ORECCHINI_TOILE_DE_JOUY_FANTASTICA.png'),
+('Orecchini in Metallo Pendenti', 'Prada', 'Orecchini', 'ORE004', 'Argento', 'Donna', 29.99, 'Orecchini_Metallo.png'),
+('Orecchini in Metallo Smaltto', 'Prada', 'Orecchini', 'ORE005', 'Multicolore', 'Donna', 19.99, 'Orecchini_Metallo_Smaltato.png'),
+('Orecchini Pendenti Quilting', 'Versace', 'Orecchini', 'ORE006', 'Oro', 'Donna', 24.99, 'ORECCHINI_PENDENTI_GRECA_QUILTING.png'),
+('Orecchini Medusa con Pietre', 'Versace', 'Orecchini', 'ORE007', 'Multicolore', 'Donna', 29.99, 'ORECCHINI_SFERA_CON_CRISTALLI_MEDUSA.png'),
+('Orecchini Eternal N°5', 'Chanel', 'Orecchini', 'ORE008', 'Oro', 'Donna', 29.99, 'ORECCHINO_ETERNAL_N°5.png'),
+('Orecchini Coco Brush', 'Chanel', 'Orecchini', 'ORE009', 'Oro', 'Donna', 29.99, 'ORECCHINI_COCO_BRUSH.png'),
+('Orecchini Cartier dAmur', 'Cartier', 'Orecchini', 'ORE010', 'Oro', 'Donna', 29.99, 'ORECCHINI_CARTIER_DAMOUR.png'),
+('Orecchini Enticelle', 'Cartier', 'Orecchini', 'ORE011', 'Oro', 'Donna', 29.99, 'ORECCHINI_ENTICELLE_DE_CARTIER.png'),
+('Orologio da Polso Medusa', 'Versace', 'Orologi', 'ORL001', 'Argento', 'Unisex', 99.99, 'OROLOGIO_MEDUSA_DECO.png'),
+('Orologio da Polso Flair Gent', 'Versace', 'Orologi', 'ORL002', 'Nero', 'Unisex', 79.99, 'OROLOGIO_VERSACE_FLAIR_GENT.png'),
+('Orologio da Polso Vintage', 'Rolex', 'Orologi', 'ORL003', 'Marrone', 'Unisex', 119.99, '1908.png'),
+('Orologio da Polso Argento', 'Rolex', 'Orologi', 'ORL004', 'Argento', 'Unisex', 69.99, 'Datejust.png'),
+('Orologio da Polso Oro', 'Rolex', 'Orologi', 'ORL005', 'Nero', 'Unisex', 149.99, 'Day-Date.png'),
+('Orologio da Polso My Dior', 'Dior', 'Orologi', 'ORL006', 'Argento', 'Unisex', 129.99, 'LA_D_MY_DIOR.png'),
+('Orologio da Polso Gem Dior', 'Dior', 'Orologi', 'ORL007', 'Argento', 'Unisex', 59.99, 'GEM_DIOR.jpg'),
+('Orologio da Polso J12 Cybernetic', 'Chanel', 'Orologi', 'ORL008', 'Nero', 'Donna', 89.99, 'OROLOGIO_J12_CYBERNETIC.png'),
+('Orologio da Polso Tank', 'Cartier', 'Orologi', 'ORL009', 'Marrone', 'Unisex', 59.99, 'OROLOGIO_TANK_LOUIS_CARTIER.png'),
+('Orologio da Polso Santos', 'Cartier', 'Orologi', 'ORL010', 'Nero', 'Uomo', 89.99, 'OROLOGIO_SANTOS_DE_CARTIER.png'),
+('Anello con Fiore', 'Dior', 'Anelli', 'ANL001', 'Blu', 'Donna', 299.99, 'ANELLO_TOILE_DE_JOUY_VOYAGE.png'),
+('Set di Anelli Rosa', 'Dior', 'Anelli', 'ANL002', 'Rosa', 'Donna', 79.99, 'SET_ANELLI_DIOR_CODE.png'),
+('Anello Prada Symbole', 'Prada', 'Anelli', 'ANL003', 'Nero', 'Donna', 89.99, 'Anello_Prada_Symbole.png'),
+('Anello in Metallo Smaltato', 'Prada', 'Anelli', 'ANL004', 'Multicolore', 'Donna', 59.99, 'Anello_Metallo_Smaltato.png'),
+('Anello Medusa', 'Versace', 'Anelli', 'ANL005', 'Argeto', 'Donna', 69.99, 'ANELLO_MEDUSA.png'),
+('Anello Medusa rigido', 'Versace', 'Anelli', 'ANL006', 'Oro', 'Donna', 54.99, 'ANELLO_RIGIDO_QUADRATO_MEDUSA_CRISTALLI.png'),
+('Anello Coco Brush Toi et Moi', 'Chanel', 'Anelli', 'ANL007', 'Oro', 'Donna', 39.99, 'ANELLO_COCO_BRUSH_TOI_ET_MOI.png'),
+('Anello Coco Brush Oro', 'Chanel', 'Anelli', 'ANL008', 'Multicolore', 'Donna', 29.99, 'ANELLO_COCO_BRUSH.png'),
+('Anello Clash de Cartier', 'Cartier', 'Anelli', 'ANL009', 'Oro', 'Donna', 39.99, 'ANELLO_CLASH_DE_CARTIER.png'),
+('Anello Trinity', 'Cartier', 'Anelli', 'ANL010', 'Multicolore', 'Donna', 29.99, 'ANELLO_TRINITY.png');
+
+
