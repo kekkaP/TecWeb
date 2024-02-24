@@ -1,5 +1,4 @@
 .messages-section {
-    display: flex;
     flex-direction: column;
     align-items: stretch;
 }
@@ -27,9 +26,6 @@
     border-radius: 8px;
 }
 
-.product_name {
-    flex-basis: calc(60% - 16px);
-}
 
 .product-price {
     flex-basis: calc(20% - 16px);

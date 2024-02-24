@@ -54,7 +54,7 @@ function register(email, password) {
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({email: email, password: password}),
-        success: function (response) {
+        success: function () {
             console.log('Register successful');
             login(email, password);
         },
@@ -321,7 +321,7 @@ function recalculateCart() {
         $('#cart-tax').html(tax.toFixed(2));
         $('#cart-shipping').html(shipping.toFixed(2));
         $('#cart-total').html(total.toFixed(2));
-        if (total == 0) {
+        if (total === 0) {
             $('.checkout').fadeOut(fadeTime);
         } else {
             $('.checkout').fadeIn(fadeTime);
