@@ -6,23 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
         modeSwitch.classList.toggle('active');
     });
 
-    var listView = document.querySelector('.list-view');
-    var gridView = document.querySelector('.grid-view');
-    var projectsList = document.querySelector('.project-boxes');
-
-    listView.addEventListener('click', function () {
-        gridView.classList.remove('active');
-        listView.classList.add('active');
-        projectsList.classList.remove('jsGridView');
-        projectsList.classList.add('jsListView');
-    });
-
-    gridView.addEventListener('click', function () {
-        gridView.classList.add('active');
-        listView.classList.remove('active');
-        projectsList.classList.remove('jsListView');
-        projectsList.classList.add('jsGridView');
-    });
 
     document.querySelector('.messages-btn').addEventListener('click', function () {
         document.querySelector('.messages-section').classList.add('show');
@@ -59,17 +42,6 @@ function toggleDropdownSub(dropdownId) {
     if (dropdownSub) {
         dropdownSub.style.display = (dropdownSub.style.display === 'block') ? 'none' : 'block';
     }
-}
-
-
-function showRegister() {
-    const elementToToggle = document.getElementById('RegisterForm');
-    elementToToggle.classList.toggle('visible');
-}
-
-function showLogin() {
-    const elementToToggle = document.getElementById('LoginForm');
-    elementToToggle.classList.toggle('visible');
 }
 
 

@@ -108,7 +108,9 @@ function checkout() {
             data: JSON.stringify({currentCart}),
             success: function (response) {
                 $('.product').remove();
+                recalculateCart();
                 console.log(response.message);
+                showSuccessMessage();
             },
             error: function (error) {
                 console.error(error.responseText);
@@ -121,6 +123,15 @@ function checkout() {
     }
 }
 
+function showSuccessMessage() {
+    document.getElementById("myForm").style.display = "block";
+    document.getElementById("overlay").style.display = "flex";
+    setTimeout(() => {
+        // Nascondi il messaggio e l'overlay dopo 2 secondi
+        document.getElementById("myForm").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+    }, 2000);
+}
 
 $('.checkout').click(function () {
     checkout();
@@ -350,7 +361,9 @@ function handleLogin(event) {
 
     var email = document.getElementById("lemail").value;
     var password = document.getElementById("lpassword").value;
-    login(email, password);
+    if (email && password !== '') {
+        login(email, password);
+    }
 }
 
 function handleRegister(event) {
@@ -359,10 +372,62 @@ function handleRegister(event) {
     var email = document.getElementById("remail").value;
     var password = document.getElementById("rpassword").value;
 
-    register(email, password);
+    if (email && password !== '') {
+        register(email, password);
+    }
 }
 
 
+document.addEventListener('DOMContentLoaded', function () {
+    // Get references to the login and register forms
+    const loginForm = document.getElementById('LoginForm');
+    const registerForm = document.getElementById('RegisterForm');
 
+    // Get references to the close buttons
+    const closeLoginFormBtn = document.getElementById('closeLoginForm');
+    const closeRegisterFormBtn = document.getElementById('closeRegisterForm');
 
+    // Get references to the overlay elements
+    const overlay = document.getElementById('overlay');
 
+    // Function to toggle the visibility of an element
+    function toggleVisibility(elementToToggle) {
+        elementToToggle.classList.toggle('visible');
+    }
+
+    // Function to close both forms
+    function closeBothForms() {
+        toggleVisibility(loginForm);
+        toggleVisibility(registerForm);
+    }
+
+    // Event listener for clicking outside the forms
+    overlay.addEventListener('click', function () {
+        closeBothForms();
+    });
+
+    // Event listener for clicking the close button in the login form
+    closeLoginFormBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        toggleVisibility(loginForm);
+    });
+
+    // Event listener for clicking the close button in the register form
+    closeRegisterFormBtn.addEventListener('click', function (event) {
+        event.preventDefault();
+        toggleVisibility(registerForm);
+    });
+
+    // Event listener for clicking on the login form toggle button
+// Event listener per fare clic sul pulsante di attivazione del form di login
+    document.getElementById('showLoginFormBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        toggleVisibility(loginForm);
+    });
+
+// Event listener per fare clic sul pulsante di attivazione del form di registrazione
+    document.getElementById('showRegisterFormBtn').addEventListener('click', function (event) {
+        event.preventDefault();
+        toggleVisibility(registerForm);
+    });
+});
