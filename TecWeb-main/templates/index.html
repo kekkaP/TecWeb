@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Luxury Jewels</title>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons'>
+    <link rel='stylesheet' href='https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/unicons.css'>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../static/css/main.css">
+    <link rel="stylesheet" href="../static/css/addToCart.css">
+    <link rel="stylesheet" href="../static/css/filtridropdown.css">
+    <link rel="stylesheet" href="../static/css/cart.css">
+
+</head>
+<body>
+<div class="app-container">
+
+    <div class="app-header">
+
+
+        <div class="app-header-left">
+            <span class="app-icon"></span>
+            <p class="app-name">Luxury</p>
+
+            <div class="search-wrapper">
+                <input class="search-input" type="text" placeholder="Search" id="search-input">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+                     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-search"
+                     viewBox="0 0 24 24">
+                    <defs></defs>
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+            </div>
+
+        </div>
+
+
+        <div class="app-header-right">
+
+            <button class="mode-switch" title="Switch Theme">
+                <svg class="moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                     stroke-width="2" width="24" height="24" viewBox="0 0 24 24">
+                    <defs></defs>
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                </svg>
+            </button>
+
+
+            {% if current_user.is_authenticated %}
+            <button class="profile-btn" onclick="logoutUser()">
+                <span>Logout</span>
+            </button>
+            {% else %}
+
+            <button class="profile-btn" id="showRegisterFormBtn">
+                <span>Sign up</span>
+            </button>
+            <button class="profile-btn" id="showLoginFormBtn">
+                <span>Login</span>
+            </button>
+            {% endif %}
+
+
+        </div>
+
+
+        <button class="messages-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="feather feather-message-circle">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            </svg>
+        </button>
+
+
+    </div>
+
+    <div class="success-message-overlay" id="overlay"></div>
+    <div id="myForm" class="success-message">
+        <p>Ordine completato</p>
+    </div>
+
+    <div class="app-content">
+
+
+        <!-- Login Form -->
+        <div id="LoginForm" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50
+         hidden-element
+         min-h-screen
+         [ p-4 md:p-6 lg:p-8 ]
+         [ flex justify-center items-center ]">
+            <form method="POST" onsubmit="handleLogin(event)" style="font: 1em/1.618 Nunito, sans-serif;"
+                  class=" signup-form
+               max-w-sm
+               rounded-2xl
+               text-[#1A2421]
+               backdrop-blur-lg
+               [ p-8 md:p-10 lg:p-10 ]
+               [ bg-gradient-to-b from-white/60 to-white/30 ]
+               [ border-[1px] border-solid border-white border-opacity-30 ]
+               [ shadow-black/70 shadow-2xl ]">
+                <h3 class="mb-1 text-md text-[#1A2421]/80">Signin</h3>
+                <h1 class="mb-6 uppercase font-bold [ text-xl md:text-2xl lg:text-2xl ]">Login</h1>
+                <p class="mb-6 [ text-sm text-[#1A2421]/70 text-opacity-50 ]">Enter a valid email email &amp; password
+                    in the fields below to get started.</p>
+                <button id="closeLoginForm"
+                        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <label
+                        for="lemail"
+                        class="form-label relative block mb-4 text-black/50 focus-within:text-[#333]">
+
+                    <svg class="label-icon
+                  transition pointer-events-none
+                  [ w-6 h-6 ]
+                  [ absolute top-1/2 left-3 ]
+                  [ transform -translate-y-1/2 ]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                         fill="currentColor">
+                        <path d="M0 0h24v24H0V0z" fill="none"/>
+                        <path d="M12 1.95c-5.52 0-10 4.48-10 10s4.48 10 10 10h5v-2h-5c-4.34 0-8-3.66-8-8s3.66-8 8-8 8 3.66 8 8v1.43c0 .79-.71 1.57-1.5 1.57s-1.5-.78-1.5-1.57v-1.43c0-2.76-2.24-5-5-5s-5 2.24-5 5 2.24 5 5 5c1.38 0 2.64-.56 3.54-1.47.65.89 1.77 1.47 2.96 1.47 1.97 0 3.5-1.6 3.5-3.57v-1.43c0-5.52-4.48-10-10-10zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+                    </svg><!-- label-icon -->
+                    <input class="form-input
+                    block w-full rounded-lg leading-none focus:outline-none placeholder-black/50
+                    [ transition-colors duration-200 ]
+                    [ py-3 pr-3 md:py-4 md:pr-4 lg:py-4 lg:pr-4 pl-12 ]
+                    [ bg-black/20 focus:bg-black/25 ]
+                    [ text-[#333] focus:text-black ]" type="email" name="email" id="lemail" placeholder="Email">
+                </label><!-- form-label -->
+
+                <label
+                        for="lpassword"
+                        class="form-label relative text-black/50 focus-within:text-[#333] block mb-4">
+                    <svg class="label-icon
+                  transition pointer-events-none
+                  [ w-6 h-6 ]
+                  [ absolute top-1/2 left-3 ]
+                  [ transform -translate-y-1/2 ]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                         fill="currentColor">
+
+                        <g fill="none">
+                            <path d="M0 0h24v24H0V0z"/>
+                            <path d="M0 0h24v24H0V0z" opacity=".87"/>
+                        </g>
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                    </svg><!-- .label-icon -->
+
+                    <input class="block w-full rounded-lg leading-none focus:outline-none placeholder-black/50
+                    [ transition-colors duration-200 ]
+                    [ py-3 pr-3 md:py-4 md:pr-4 lg:py-4 lg:pr-4 pl-12 ]
+                    [ bg-black/20 focus:bg-black/25 ]
+                    [ text-[#333] focus:text-black ]"
+                           type="password" name="password" id="lpassword" placeholder="Password"><!-- .form-input -->
+                </label><!-- .form-label -->
+
+                <button class="form-input w-full rounded-lg font-bold text-white focus:outline-none
+                   [ p-3 md:p-4 lg:p-4 ]
+                   [ transition-colors duration-500 ]
+                   [ bg-blue-800 hover:bg-blue-700 ]">Continue
+                </button><!-- .form-input -->
+
+
+            </form>
+
+        </div>
+        <!-- Register Form -->
+        <div id="RegisterForm" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50
+         hidden-element
+         min-h-screen
+         [ p-4 md:p-6 lg:p-8 ]
+         [ flex justify-center items-center ]">
+            <form method="POST" onsubmit="handleRegister(event)" style="font: 1em/1.618 Nunito, sans-serif;"
+                  class=" signup-form
+               max-w-sm
+               rounded-2xl
+               text-[#1A2421]
+               backdrop-blur-lg
+               [ p-8 md:p-10 lg:p-10 ]
+               [ bg-gradient-to-b from-white/60 to-white/30 ]
+               [ border-[1px] border-solid border-white border-opacity-30 ]
+               [ shadow-black/70 shadow-2xl ]">
+                <h3 class="mb-1 text-md text-[#1A2421]/80">Signup</h3>
+                <h1 class="mb-6 uppercase font-bold [ text-xl md:text-2xl lg:text-2xl ]">Register</h1>
+                <p class="mb-6 [ text-sm text-[#1A2421]/70 text-opacity-50 ]">Enter a valid email email &amp; password
+                    in the fields below to get started.</p>
+                <button id="closeRegisterForm"
+                        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <label
+                        for="remail"
+                        class="form-label relative block mb-4 text-black/50 focus-within:text-[#333]">
+
+                    <svg class="label-icon
+                  transition pointer-events-none
+                  [ w-6 h-6 ]
+                  [ absolute top-1/2 left-3 ]
+                  [ transform -translate-y-1/2 ]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                         fill="currentColor">
+                        <path d="M0 0h24v24H0V0z" fill="none"/>
+                        <path d="M12 1.95c-5.52 0-10 4.48-10 10s4.48 10 10 10h5v-2h-5c-4.34 0-8-3.66-8-8s3.66-8 8-8 8 3.66 8 8v1.43c0 .79-.71 1.57-1.5 1.57s-1.5-.78-1.5-1.57v-1.43c0-2.76-2.24-5-5-5s-5 2.24-5 5 2.24 5 5 5c1.38 0 2.64-.56 3.54-1.47.65.89 1.77 1.47 2.96 1.47 1.97 0 3.5-1.6 3.5-3.57v-1.43c0-5.52-4.48-10-10-10zm0 13c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+                    </svg>
+                    <input class="form-input
+                    block w-full rounded-lg leading-none focus:outline-none placeholder-black/50
+                    [ transition-colors duration-200 ]
+                    [ py-3 pr-3 md:py-4 md:pr-4 lg:py-4 lg:pr-4 pl-12 ]
+                    [ bg-black/20 focus:bg-black/25 ]
+                    [ text-[#333] focus:text-black ]" type="email" name="email" id="remail" placeholder="Email">
+                </label>
+
+                <label
+                        for="rpassword"
+                        class="form-label relative text-black/50 focus-within:text-[#333] block mb-4">
+                    <svg class="label-icon
+                  transition pointer-events-none
+                  [ w-6 h-6 ]
+                  [ absolute top-1/2 left-3 ]
+                  [ transform -translate-y-1/2 ]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                         fill="currentColor">
+
+                        <g fill="none">
+                            <path d="M0 0h24v24H0V0z"/>
+                            <path d="M0 0h24v24H0V0z" opacity=".87"/>
+                        </g>
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                    </svg>
+
+                    <input class="block w-full rounded-lg leading-none focus:outline-none placeholder-black/50
+                    [ transition-colors duration-200 ]
+                    [ py-3 pr-3 md:py-4 md:pr-4 lg:py-4 lg:pr-4 pl-12 ]
+                    [ bg-black/20 focus:bg-black/25 ]
+                    [ text-[#333] focus:text-black ]"
+                           type="password" name="password" id="rpassword" placeholder="Password">
+                </label>
+
+                <button class="form-input w-full rounded-lg font-bold text-white focus:outline-none
+                   [ p-3 md:p-4 lg:p-4 ]
+                   [ transition-colors duration-500 ]
+                   [ bg-blue-800 hover:bg-blue-700 ]">Continue
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="projects-section">
+
+
+            <div class="projects-section-header">
+                <div class="projects-status">
+
+                    <div class="sec-center">
+                        <input class="dropdown" type="checkbox" id="dropdown" name="dropdown"/>
+                        <label class="for-dropdown" for="dropdown">Filtri <i class="uil uil-arrow-down"></i></label>
+
+                        <div class="section-dropdown">
+                            {% for table, values in table_values.items() %}
+                            <input class="dropdown-sub" type="checkbox" id="dropdown-sub-{{ table }}"
+                                   name="dropdown-sub"/>
+                            <label class="for-dropdown-sub dropdown-sub-label" for="dropdown-sub-{{ table }}">{{ table
+                                }}<i class="uil uil-plus"></i></label>
+
+                            <div class="section-dropdown-sub" data-dropdown-id="{{ table }}">
+                                {% for value in values['values'] %}
+                                <input type="checkbox" id="checkbox-{{ value }}" class="checkbox-sub"
+                                       name="checkbox-sub"/>
+                                <label for="checkbox-{{ value }}">{{ value }}<i class="uil uil-arrow-right"></i></label>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <div class="project-boxes jsGridView" id="results-container">
+
+                {% for prodotto in prodotti %}
+                <div class="project-box-wrapper">
+                    <div class="project-box">
+
+
+                        <div class="project-box-content-header">
+                                            <span> <img
+                                                    src="{{ url_for('static', filename='images/' + prodotto.immagine) }}"
+                                                    alt="{{ prodotto.prodotto_nome }}"> </span>
+                            <div class="more-wrapper">
+
+                            </div>
+                            <p class="box-content-header"> {{ prodotto.prodotto_nome }} </p>
+                            <p class="box-content-subheader">{{ prodotto.prezzo }}</p>
+                            <p class="box-content-id">{{ prodotto.id }}</p>
+
+                            <div class="white">
+
+                                <button class="addToCart">Add
+                                </button>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+
+        </div>
+
+        <div class="messages-section">
+            <button class="messages-close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="feather feather-x-circle">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+            </button>
+            <div class="projects-section-header">
+                <p>Cart</p>
+            </div>
+            <div class="messages">
+
+                <div class="message-box">
+
+                    <div class="shopping-cart">
+
+                    </div>
+
+                </div>
+                <div class="message-box">
+                    <div class="totals">
+                        <div class="totals-item">
+                            <label>Subtotal</label>
+                            <div class="totals-value" id="cart-subtotal">0.00</div>
+                        </div>
+                        <div class="totals-item">
+                            <label>Tax (5%)</label>
+                            <div class="totals-value" id="cart-tax">0.00</div>
+                        </div>
+                        <div class="totals-item">
+                            <label>Shipping</label>
+                            <div class="totals-value" id="cart-shipping">0.00</div>
+                        </div>
+                        <div class="totals-item totals-item-total">
+                            <label>Total</label>
+                            <div class="totals-value" id="cart-total">0.00</div>
+                        </div>
+                    </div>
+                    <button class="checkout">Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script src="../static/js/main.js"></script>
+<script src="../static/js/user.js"></script>
+{% if current_user.is_authenticated %}
+<script>
+    isLoggedIn = true;
+</script>
+{% endif %}
+
+</body>
+</html>
