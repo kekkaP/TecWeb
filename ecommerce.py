@@ -7,7 +7,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 app = Flask(__name__)
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = '1234'
-app.config['MYSQL_DB'] = 'products_db'
+app.config['MYSQL_DB'] = 'tecWeb24'
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['SECRET_KEY'] = 'una-chiave-segreta-sicura-e-segreta'
 bcrypt = Bcrypt(app)
@@ -140,25 +140,11 @@ def load_user(user_id):
     return None
 
 
-# Aggiungi una variabile di contesto globale per rendere disponibile current_user nella barra di navigazione
-@app.context_processor
-def inject_user():
-    return dict(current_user=current_user)
-
-
-# Funzione di logout
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-
-# Pagina protetta
-@app.route('/pagina_riservata')
-@login_required
-def pagina_riservata():
-    return render_template('pagina_riservata.html')
 
 
 @app.route('/prodotti/<string:id>')
@@ -188,14 +174,14 @@ def add_to_cart():
         with get_db_connection() as conn, conn.cursor() as cur:
             # Prova ad aggiornare la tupla esistente
             cur.execute(
-                "UPDATE prodotti_cart SET data_inizio = %s, data_fine = %s, quantita = %s "
+                "UPDATE prodottiUtente SET data_inizio = %s, data_fine = %s, quantita = %s "
                 "WHERE id_carrello = (SELECT id FROM carrello WHERE id_cliente = %s) AND id_prodotto = %s",
                 (data_inizio, data_fine, quantity, current_user.id, product_id))
 
             if cur.rowcount == 0:
                 # Se non esiste una tupla con la chiave primaria specificata, inserisci una nuova tupla
                 cur.execute(
-                    "INSERT INTO prodotti_cart (id_carrello, id_prodotto, data_inizio, data_fine, quantita) "
+                    "INSERT INTO prodottiUtente (id_carrello, id_prodotto, data_inizio, data_fine, quantita) "
                     "VALUES ((SELECT id FROM carrello WHERE id_cliente = %s), %s, %s, %s, %s)",
                     (current_user.id, product_id, data_inizio, data_fine, quantity))
 
@@ -208,30 +194,6 @@ def add_to_cart():
     return jsonify(response)
 
 
-def get_product_id_by_name(product_name):
-    with get_db_connection() as conn, conn.cursor() as cur:
-        cur.execute("SELECT id FROM prodotti WHERE nome = %s", (product_name,))
-        result = cur.fetchone()
-        if result:
-            return result['id']
-    return None
-
-
-@app.route('/user/cart/remove', methods=['POST'])
-@login_required
-def remove_from_cart():
-    data = request.get_json()
-
-    with get_db_connection() as conn, conn.cursor() as cur:
-        cur.execute("DELETE FROM prodotti_cart WHERE id_carrello = (SELECT id FROM carrello WHERE id_cliente = %s) AND "
-                    "id_prodotto = %s",
-                    (current_user.id, data['product_id']))
-        conn.commit()
-
-    response = {'success': True, 'message': 'Prodotto rimosso dal carrello con successo'}
-    return jsonify(response)
-
-
 @app.route('/checkout', methods=['POST'])
 @login_required
 def checkout():
@@ -240,7 +202,7 @@ def checkout():
             # Get the user's cart items
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT id_prodotto, data_inizio, data_fine, quantita FROM prodotti_cart WHERE id_carrello = (SELECT id FROM carrello WHERE id_cliente = %s)",
+                    "SELECT id_prodotto, data_inizio, data_fine, quantita FROM prodottiUtente WHERE id_carrello = (SELECT id FROM carrello WHERE id_cliente = %s)",
                     (current_user.id,))
                 cart_items = cur.fetchall()
 
@@ -253,12 +215,12 @@ def checkout():
                 # Move items from cart to the new order
                 for item in cart_items:
                     cur.execute(
-                        "INSERT INTO prodotti_cart (id_ordine, id_prodotto, data_inizio, data_fine, quantita) VALUES (%s, %s, %s, %s, %s)",
+                        "INSERT INTO prodottiUtente (id_ordine, id_prodotto, data_inizio, data_fine, quantita) VALUES (%s, %s, %s, %s, %s)",
                         (order_id, item['id_prodotto'], item['data_inizio'], item['data_fine'], item['quantita']))
 
                 # Clear the user's cart
                 cur.execute(
-                    "DELETE FROM prodotti_cart WHERE id_carrello = (SELECT id FROM carrello WHERE id_cliente = %s)",
+                    "DELETE FROM prodottiUtente WHERE id_carrello = (SELECT id FROM carrello WHERE id_cliente = %s)",
                     (current_user.id,))
 
             conn.commit()
@@ -278,7 +240,7 @@ def get_user_cart():
     with get_db_connection() as conn, conn.cursor() as cur:
         query = '''
             SELECT p.*, pc.data_inizio, pc.data_fine, pc.quantita
-            FROM prodotti_cart pc
+            FROM prodottiUtente pc
             JOIN prodotti p ON pc.id_prodotto = p.id
             WHERE pc.id_carrello = (
                 SELECT id
@@ -393,35 +355,6 @@ def cerca_prodotto(cur, filters_json, search_term):
     cur.execute(query, valid_filters)
     result = cur.fetchall()
     return result
-
-
-@app.route('/send_message', methods=['POST'])
-@login_required
-def send_message():
-    recipient_email = request.form.get('recipient')
-    message_content = request.form.get('message')
-
-    # Ottieni l'ID dell'utente destinatario
-    with get_db_connection() as conn, conn.cursor() as cur:
-        cur.execute("SELECT id FROM utenti WHERE email = %s", (recipient_email,))
-        recipient_data = cur.fetchone()
-
-        if not recipient_data:
-            flash('Utente destinatario non trovato.', 'message_error')
-            return redirect(url_for('index'))
-
-        recipient_id = recipient_data['id']
-
-    # Inserisci il messaggio nel database
-    with get_db_connection() as conn, conn.cursor() as cur:
-        cur.execute("""
-            INSERT INTO messages (sender_id, recipient_id, content)
-            VALUES (%s, %s, %s)
-        """, (current_user.id, recipient_id, message_content))
-        conn.commit()
-
-    flash('Messaggio inviato con successo!', 'message_success')
-    return redirect(url_for('index'))
 
 
 def get_db_connection():
